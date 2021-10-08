@@ -1,6 +1,6 @@
 <template>
   <div id="app" :style="{height: height+'px', backgroundSize: bg + 'px'}">
-    <component :is="router" :wh="height" :greeting="greeting" @getRouter= "getRouter" @getBg= "getBg"></component>
+    <component :is="router" :wh="height" :greeting="greeting" :info="info" @getRouter="getRouter" @getBg="getBg" @getInfo="getInfo"></component>
   </div>
 </template>
 
@@ -16,7 +16,8 @@ export default {
       height: "",
       bg: 0,
       router: "Homepage",
-      greeting: ""
+      greeting: "",
+      info: ""
     }
   },
   components: {
@@ -36,6 +37,9 @@ export default {
     },
     getBg(val) {
       this.bg = val
+    },
+    getInfo(val) {
+      this.info = val
     }
   },
   created() {
@@ -71,9 +75,6 @@ export default {
         })
       });
   },
-  mounted() {
-    // this.bg = 300
-  }
 }
 </script>
 

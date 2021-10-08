@@ -6,7 +6,7 @@
     <h2 v-show="greeting !== ''" :class="'animate__animated ' + animate.h2_second">Welcome Back!</h2>
     <van-form :style="{top: wh*0.43+'px'}">
       <van-field
-        v-model="form.phonember"
+        v-model="form.phonenumber"
         placeholder="请输入手机号"
         maxlength="11"
         type="number"
@@ -36,8 +36,6 @@
 <script>
 //引入md5
 import md5 from 'js-md5';
-//引入eventbus
-import bus from './eventBus'
 export default {
   name: 'LogIn',
   data() {
@@ -57,12 +55,12 @@ export default {
         button: "animate__fadeOutDown",
       },
       form: {//表单数据
-        phonember: "",
+        phonenumber: "",
         pwd: "",
       },
     }
   },
-  props: ["wh", "greeting"],//父组件传来的屏幕高度
+  props: ["wh", "greeting", "info"],//父组件传来的屏幕高度
   methods: {
     //返回homepage
     back() {
@@ -74,7 +72,7 @@ export default {
     //提交登录
     onSubmit() {
       //校验四个输入是否有空
-      if(this.form.phonember.trim() === "" || this.form.pwd.trim() === "") {
+      if(this.form.phonenumber.trim() === "" || this.form.pwd.trim() === "") {
         this.$toast.fail('请将表单填写完成哦~');
         return
       }
@@ -88,7 +86,7 @@ export default {
         method: "post",
         url: "http://192.168.240.130/login",
         data: {
-          phonember: this.form.phonember,
+          phonenumber: this.form.phonenumber,
           pwd: md5(this.form.pwd),
         }
       })
@@ -110,6 +108,12 @@ export default {
         });
     }
   },
+  mounted() {
+    if(this.info === "")
+      return
+    this.form = this.info;
+    this.$emit("getInfo", "")
+  }
 }
 </script>
 
@@ -122,6 +126,7 @@ export default {
     padding: 30px 15px;
     img {
       width: 32px;
+      cursor: pointer;
     }
   }
   .logo {
@@ -156,6 +161,9 @@ export default {
       font-size: 12px;
       letter-spacing: 2px;
       color: #ea5e4b;
+      span {
+        cursor: pointer;
+      }
     }
     .submit {
       border-radius: 10px;
@@ -170,6 +178,7 @@ export default {
       letter-spacing: 2px;
       .register {
         color: #ea5e4b;
+        cursor: pointer;
       }
     }
   }

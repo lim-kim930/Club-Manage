@@ -12,7 +12,7 @@
         :class="'animate__animated ' + animate.img"
       />
       <van-field
-        v-model="form.phonember"
+        v-model="form.phonenumber"
         placeholder="请输入手机号"
         maxlength="11"
         type="number"
@@ -44,7 +44,7 @@
       </div>
     </van-form>
     <div class="footer" :style="{top: wh*0.38 + 400 +'px'}" :class="'animate__animated ' + animate.button">
-      <span>已经有账号了? <span class="logIn" @click="$emit('getRouter', 'LogIn')">去登陆</span></span>
+      <span>已经有账号了? <span class="logIn" @click="$emit('getRouter', 'LogIn')">去登录</span></span>
     </div>
   </div>
 </template>
@@ -52,8 +52,6 @@
 <script>
 //引入md5
 import md5 from 'js-md5';
-//引入eventbus
-import bus from './eventBus'
 export default {
   name: 'Register',
   data() {
@@ -66,7 +64,7 @@ export default {
       },
       form: {//表单数据
         Uname: "",
-        phonember: "",
+        phonenumber: "",
         pwd: "",
         code: ""
       },
@@ -92,12 +90,19 @@ export default {
     },
     //获取验证码
     sendSms() {
+      if(this.form.phonenumber.trim() === "") {
+        this.$toast.fail('请先填写手机号哦~');
+        return
+      } else if(this.form.phonenumber.trim().length !== 11){
+          this.$toast.fail('请填写正确的手机号码哦~');
+          return
+      }
       this.smsLoading = true; //按钮加载
       this.axios({
         method: "post",
         url: "http://192.168.240.130/code",
         data: {
-          phonember: this.form.phonember
+          phonenumber: this.form.phonenumber
         }
       })
         .then((response) => {
@@ -128,8 +133,11 @@ export default {
     //提交注册
     onSubmit() {
       //校验四个输入是否有空
-      if(this.form.Uname.trim() === "" || this.form.phonember.trim() === "" || this.form.pwd.trim() === "" || this.form.code.trim() === "" ) {
+      if(this.form.Uname.trim() === "" || this.form.phonenumber.trim() === "" || this.form.pwd.trim() === "" || this.form.code.trim() === "" ) {
         this.$toast.fail('请将表单填写完成哦~');
+        return
+      } else if(this.form.phonenumber.trim().length !== 11){
+        this.$toast.fail('请填写正确的手机号码哦~');
         return
       }
       //校验是否获取了验证码
@@ -152,7 +160,7 @@ export default {
         method: "post",
         url: "http://192.168.240.130/register",
         data: {
-          phonember: this.form.phonember,
+          phonenumber: this.form.phonenumber,
           pwd: this.form.pwd,
           Uname: this.form.Uname
         }
@@ -166,18 +174,18 @@ export default {
             cancelButtonText: "先不急"
           })
             .then(() => {
-              bus.$emit("info", {//向登录表单传手机号和密码
-                phonember: this.form.phonember,
+              this.$emit("getInfo", {//向父组件传手机号和密码
+                phonenumber: Number(this.form.phonenumber),
                 pwd: this.form.pwd
               })
               setTimeout(() => {
-                this.$emit("getRouter", "Homepage");//重定向到登录
+                this.$emit("getRouter", "LogIn");//重定向到登录
               }, 200)
             })
             .catch(() => {
               this.form = {//清空表单
                 Uname: "",
-                phonember: "",
+                phonenumber: "",
                 pwd: "",
                 code: ""
               };
@@ -204,6 +212,7 @@ export default {
     padding: 30px 15px;
     img {
       width: 32px;
+      cursor: pointer;
     }
   }
   .logo {
@@ -246,6 +255,7 @@ export default {
       letter-spacing: 2px;
       .logIn {
         color: #ea5e4b;
+        cursor: pointer;
       }
     }
   }
