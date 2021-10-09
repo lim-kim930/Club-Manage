@@ -1,4 +1,4 @@
-# server
+# 社团管理
 
 ## Project setup
 ```
