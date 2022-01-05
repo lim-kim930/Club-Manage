@@ -1,10 +1,10 @@
 <template>
   <div class="hello" :style="{height: wh+'px'}">
-    <img src="../assets/logo.png" alt="社团管理" :style="{ top: 0.44*wh + 'px'}" :class="'animate__animated ' + animate.img">
-    <h2 :style="{ top: 0.62*wh + 'px'}" :class="'animate__animated ' + animate.h2_first">Easier Way To</h2>
-    <h2 :style="{ top: 0.62*wh + 45 + 'px'}" :class="'animate__animated ' + animate.h2_second">Be Linked</h2>
-    <van-button :style="{ top: 0.82*wh + 45 + 'px'}" color="#ea5e4b" plain type="primary" :class="'animate__animated ' + animate.button_first" @click="sign(1)">注册</van-button>
-    <van-button :style="{ top: 0.82*wh + 45 + 'px'}" color="#ea5e4b" type="primary" :class="'animate__animated ' + animate.button_second" @click="sign(2)">登录</van-button>
+    <img src="../assets/logo.png" alt="社团管理" :style="{ top: 0.44*wh + 'px'}" :class="'animate__animated animate__' + animate.img">
+    <h2 :style="{ top: 0.62*wh + 'px'}" :class="'animate__animated animate__' + animate.h2_first">Easier Way To</h2>
+    <h2 :style="{ top: 0.62*wh + 45 + 'px'}" :class="'animate__animated animate__' + animate.h2_second">Be Linked</h2>
+    <van-button :style="{ top: 0.82*wh + 45 + 'px'}" color="#ea5e4b" plain type="primary" :class="'animate__animated animate__' + animate.button_first" @click="switchRoute(1)">注册</van-button>
+    <van-button :style="{ top: 0.82*wh + 45 + 'px'}" color="#ea5e4b" type="primary" :class="'animate__animated animate__' + animate.button_second" @click="switchRoute(2)">登录</van-button>
   </div>
 </template>
 
@@ -15,28 +15,28 @@ export default {
     return {
       button: true,
       animate: {
-        img: "animate__zoomIn",
-        h2_first: "animate__fadeInDown",
-        h2_second: "animate__fadeInUp",
-        button_first: "animate__fadeInLeft",
-        button_second: "animate__fadeInRight"
+        img: "zoomIn",
+        h2_first: "fadeInDown",
+        h2_second: "fadeInUp",
+        button_first: "fadeInLeft",
+        button_second: "fadeInRight"
       }
     }
   },
   props: ["wh"],
   methods: {
-    sign(id) {
+    switchRoute(id) {
       this.$emit("getBg", 0)
       this.animate = {
-        img: "animate__zoomOut",
-        h2_first: "animate__fadeOutUp",
-        h2_second: "animate__fadeOutDown",
-        button_first: "animate__fadeOutLeft",
-        button_second: "animate__fadeOutRight"
+        img: "zoomOut",
+        h2_first: "fadeOutUp",
+        h2_second: "fadeOutDown",
+        button_first: "fadeOutLeft",
+        button_second: "fadeOutRight"
       }
       setTimeout(() => {
         this.$emit("getRouter", id === 1?"Register":"LogIn");
-      }, 600)
+      }, 500)
     }
   },
   mounted() {
@@ -50,6 +50,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
 .hello {
+  overflow: hidden;
   position: relative;
   img {
     position: absolute;

@@ -1,35 +1,51 @@
 <template>
   <div class="container" :style="{height: wh+'px'}">
-    <div class="header" :class="'animate__animated ' + animate.img"><img src="../assets/back.svg" alt="返回" @click="back()"></div>
-    <div class="logo" :class="'animate__animated ' + animate.img"><img src="../assets/logo2.png" alt="社团管理"></div>
-    <h2 v-show="greeting !== ''" :class="'animate__animated ' + animate.h2_first">Hello! {{greeting}}</h2>
-    <h2 v-show="greeting !== ''" :class="'animate__animated ' + animate.h2_second">Welcome Here!</h2>
+    <div class="header" :class="'animate__animated animate__' + animate.img">
+      <img src="../assets/back.svg" alt="返回" @click="back()" />
+    </div>
+    <div class="logo" :class="'animate__animated animate__' + animate.img">
+      <img src="../assets/logo2.png" alt="社团管理" />
+    </div>
+    <h2
+      v-show="greeting !== ''"
+      :class="'animate__animated animate__' + animate.h2_first"
+    >Hello! {{greeting}}</h2>
+    <h2
+      v-show="greeting !== ''"
+      :class="'animate__animated animate__' + animate.h2_second"
+    >Welcome Here!</h2>
     <van-form :style="{top: wh*0.38+'px'}">
       <van-field
         v-model="form.Uname"
-        placeholder="请输入姓名"
+        placeholder="请输入用户名"
         clearable
-        :class="'animate__animated ' + animate.img"
+        :class="'animate__animated animate__' + animate.img"
       />
       <van-field
         v-model="form.phonenumber"
         placeholder="请输入手机号"
-        maxlength="11"
-        type="number"
         clearable
-        :class="'animate__animated ' + animate.img"
+        :class="'animate__animated animate__' + animate.img"
       />
       <van-field
         v-model="form.code"
-        type="number"
         maxlength="6"
         center
         clearable
-        :class="'animate__animated ' + animate.img"
+        :class="'animate__animated animate__' + animate.img"
         placeholder="请输入短信验证码"
       >
         <template #button>
-          <van-button plain size="small" type="primary" color="#ea5e4b" @click="sendSms()" :loading="smsLoading" loading-text="发送中..." :disabled="smsDisabled">{{smsMessage}}</van-button>
+          <van-button
+            plain
+            size="small"
+            type="primary"
+            color="#ea5e4b"
+            @click="sendSms()"
+            :loading="smsLoading"
+            loading-text="发送中..."
+            :disabled="smsDisabled"
+          >{{smsMessage}}</van-button>
         </template>
       </van-field>
       <van-field
@@ -37,14 +53,21 @@
         type="password"
         placeholder="请输入密码"
         clearable
-        :class="'animate__animated ' + animate.img"
+        :class="'animate__animated animate__' + animate.img"
       />
-      <div style="margin: 16px;" :class="'animate__animated ' + animate.button">
+      <div style="margin: 16px;" :class="'animate__animated animate__' + animate.button">
         <van-button class="submit" plain block type="info" @click="onSubmit()" color="#ea5e4b">立即注册</van-button>
       </div>
     </van-form>
-    <div class="footer" :style="{top: wh*0.38 + 400 +'px'}" :class="'animate__animated ' + animate.button">
-      <span>已经有账号了? <span class="logIn" @click="$emit('getRouter', 'LogIn')">去登录</span></span>
+    <div
+      class="footer"
+      :style="{top: wh*0.38 + 400 +'px'}"
+      :class="'animate__animated animate__' + animate.button"
+    >
+      <span>
+        已经有账号了?
+        <span class="logIn" @click="$emit('getRouter', 'LogIn')">去登录</span>
+      </span>
     </div>
   </div>
 </template>
@@ -57,10 +80,10 @@ export default {
   data() {
     return {
       animate: {//动画样式
-        img: "animate__zoomIn",
-        h2_first: "animate__fadeInDown",
-        h2_second: "animate__fadeInUp",
-        button: "animate__fadeInUp",
+        img: "zoomIn",
+        h2_first: "fadeInDown",
+        h2_second: "fadeInUp",
+        button: "fadeInUp",
       },
       form: {//表单数据
         Uname: "",
@@ -79,74 +102,69 @@ export default {
     //返回homepage
     back() {
       this.animate = {
-        img: "animate__zoomOut",
-        h2_first: "animate__fadeOutUp",
-        h2_second: "animate__fadeOutDown",
-        button: "animate__fadeOutDown",
+        img: "zoomOut",
+        h2_first: "fadeOutUp",
+        h2_second: "fadeOutDown",
+        button: "fadeOutDown",
       }
       setTimeout(() => {
         this.$emit("getRouter", "Homepage");
-      }, 600)
+      }, 500)
     },
     //获取验证码
     sendSms() {
-      if(this.form.phonenumber.trim() === "") {
+      if (this.form.phonenumber.trim() === "") {
         this.$toast.fail('请先填写手机号哦~');
         return
-      } else if(this.form.phonenumber.trim().length !== 11){
-          this.$toast.fail('请填写正确的手机号码哦~');
-          return
+      } else if (this.form.phonenumber.trim().length !== 11) {
+        this.$toast.fail('请填写正确的手机号码哦~');
+        return
       }
       this.smsLoading = true; //按钮加载
       this.axios({
-        method: "post",
-        url: "http://192.168.240.130/code",
-        data: {
-          phonenumber: this.form.phonenumber
-        }
-      })
-        .then((response) => {
-          this.code = response.data.data.code;
-          this.smsLoading = false;
-          this.smsMessage = "60秒后重发";//开启按钮禁用倒计时
-          this.smsDisabled = true;
-          var count = 59
-          var timer = setInterval(() => {
-            this.smsMessage = count + "秒后重发";
-            count --
-            if(count === -1) {
-              clearInterval(timer);
-              this.smsDisabled = false;
-              this.smsDisabled = false;
-              this.smsMessage = "发送验证码";
-            }
-          }, 1000)
+        method: "get",
+        url: "http://120.26.161.80:8080/cm/sendCode/" + this.form.phonenumber,
+      }).then((response) => {
+        this.code = response.data.code;
+        this.smsLoading = false;
+        this.smsMessage = "60秒后重发";//开启按钮禁用倒计时
+        this.smsDisabled = true;
+        var count = 59
+        var timer = setInterval(() => {
+          this.smsMessage = count + "秒后重发";
+          count--
+          if (count === -1) {
+            clearInterval(timer);
+            this.smsDisabled = false;
+            this.smsDisabled = false;
+            this.smsMessage = "发送验证码";
+          }
+        }, 1000)
+      }).catch(() => {
+        this.$dialog.alert({
+          title: 'Oops!',
+          message: '获取验证码出错了~， 看来程序猿要加班了＞︿＜',
         })
-        .catch(() => {
-          this.$dialog.alert({
-            title: 'Oops!',
-            message: '获取验证码出错了~， 看来程序猿要加班了＞︿＜',
-          })
-          this.smsLoading = false;
-        });
+        this.smsLoading = false;
+      });
     },
     //提交注册
     onSubmit() {
       //校验四个输入是否有空
-      if(this.form.Uname.trim() === "" || this.form.phonenumber.trim() === "" || this.form.pwd.trim() === "" || this.form.code.trim() === "" ) {
+      if (this.form.Uname.trim() === "" || this.form.phonenumber.trim() === "" || this.form.pwd.trim() === "" || this.form.code.trim() === "") {
         this.$toast.fail('请将表单填写完成哦~');
         return
-      } else if(this.form.phonenumber.trim().length !== 11){
+      } else if (this.form.phonenumber.trim().length !== 11) {
         this.$toast.fail('请填写正确的手机号码哦~');
         return
       }
       //校验是否获取了验证码
-      if(this.code === "") {
+      if (this.code === "") {
         this.$toast.fail('请先获取验证码哦~');
         return
       }
       //校验验证码是否正确
-      if(md5(this.form.code) !== this.code) {
+      if (md5(this.form.code) !== this.code) {
         this.$toast.fail('验证码错误哦,请检查后再试试吧~');
         return
       }
@@ -158,54 +176,60 @@ export default {
       });
       this.axios({
         method: "post",
-        url: "http://192.168.240.130/register",
+        url: "http://120.26.161.80:8080/cm/register",
         data: {
           phonenumber: this.form.phonenumber,
-          pwd: this.form.pwd,
+          pwd: md5(this.form.pwd),
           Uname: this.form.Uname
         }
-      })
-        .then((response) => {
-          toast.clear();//清除加载toast
-          this.$dialog.confirm({
-            title: '芜湖~',
-            message: '注册成功啦！快去登录吧~',
-            confirmButtonText: "冲冲冲！",
-            cancelButtonText: "先不急"
+      }).then((response) => {
+        toast.clear();//清除加载toast
+        if (response.data.status === "exist") {
+          this.form = {//清空表单
+            Uname: "",
+            phonenumber: "",
+            pwd: "",
+            code: ""
+          };
+          return this.$toast.fail('用户已经注册过了哦~');
+        }
+        this.$dialog.confirm({
+          title: '芜湖~',
+          message: '注册成功啦！快去登录吧~',
+          confirmButtonText: "冲冲冲！",
+          cancelButtonText: "先不急"
+        }).then(() => {
+          this.$emit("getInfo", {//向父组件传手机号和密码
+            phonenumber: Number(this.form.phonenumber),
+            pwd: this.form.pwd
           })
-            .then(() => {
-              this.$emit("getInfo", {//向父组件传手机号和密码
-                phonenumber: Number(this.form.phonenumber),
-                pwd: this.form.pwd
-              })
-              setTimeout(() => {
-                this.$emit("getRouter", "LogIn");//重定向到登录
-              }, 200)
-            })
-            .catch(() => {
-              this.form = {//清空表单
-                Uname: "",
-                phonenumber: "",
-                pwd: "",
-                code: ""
-              };
-            });
-        })
-        .catch(() => {
-          toast.clear();
-          this.$dialog.alert({
-            title: 'Oops!',
-            message: '注册出错了~， 看来程序猿要加班了＞︿＜',
-          })
+          setTimeout(() => {
+            this.$emit("getRouter", "LogIn");//重定向到登录
+          }, 200)
+        }).catch(() => {
+          this.form = {//清空表单
+            Uname: "",
+            phonenumber: "",
+            pwd: "",
+            code: ""
+          };
         });
+      }).catch(() => {
+        toast.clear();
+        this.$dialog.alert({
+          title: 'Oops!',
+          message: '注册出错了~， 看来程序猿要加班了＞︿＜',
+        })
+      });
     }
-  },
+  }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
 .container {
+  overflow: hidden;
   position: relative;
   background-color: #fff;
   .header {
@@ -225,7 +249,7 @@ export default {
     width: 100%;
     padding: 0 40px;
     box-sizing: border-box;
-    font-family: Arial,Helvetica,sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     font-weight: 400;
     letter-spacing: 2px;
   }

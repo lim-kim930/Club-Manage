@@ -1,79 +1,79 @@
 <template>
   <div class="container" :style="{height: wh+'px'}">
-    <div class="header" :class="'animate__animated ' + animate.img"><img src="../assets/back.svg" alt="返回" @click="back()"></div>
-    <div class="logo" :class="'animate__animated ' + animate.img"><img src="../assets/logo2.png" alt="社团管理"></div>
-    <h2 v-show="greeting !== ''" :class="'animate__animated ' + animate.h2_first">Hello! {{greeting}}</h2>
-    <h2 v-show="greeting !== ''" :class="'animate__animated ' + animate.h2_second">Welcome Back!</h2>
+    <div class="header" :class="'animate__animated animate__' + animate.img"><img src="../assets/back.svg" alt="返回" @click="back()"></div>
+    <div class="logo" :class="'animate__animated animate__' + animate.img"><img src="../assets/logo2.png" alt="社团管理"></div>
+    <h2 v-show="greeting !== ''" :class="'animate__animated animate__' + animate.h2_first">Hello! {{greeting}}</h2>
+    <h2 v-show="greeting !== ''" :class="'animate__animated animate__' + animate.h2_second">Welcome Back!</h2>
     <van-form :style="{top: wh*0.43+'px'}">
       <van-field
-        v-model="form.phonenumber"
+        v-model="form.uname"
         placeholder="请输入手机号"
-        maxlength="11"
-        type="number"
+        maxlength="16"
         clearable
-        :class="'animate__animated ' + animate.img"
+        :class="'animate__animated animate__' + animate.img"
       />
       <van-field
         v-model="form.pwd"
         type="password"
         placeholder="请输入密码"
         clearable
-        :class="'animate__animated ' + animate.img"
+        :class="'animate__animated animate__' + animate.img"
       />
-      <div class="forgot" :class="'animate__animated ' + animate.forgot">
+      <div class="forgot" :class="'animate__animated animate__' + animate.forgot">
         <span>不小心忘了密码</span>
       </div>
-      <div style="margin: 16px;" :class="'animate__animated ' + animate.button">
+      <div style="margin: 16px;" :class="'animate__animated animate__' + animate.button">
         <van-button class="submit" block type="info" @click="onSubmit()" color="#ea5e4b">立即登录</van-button>
       </div>
     </van-form>
-    <div class="footer" :style="{top: wh*0.38 + 400 +'px'}" :class="'animate__animated ' + animate.button">
+    <div class="footer" :style="{top: wh*0.38 + 400 +'px'}" :class="'animate__animated animate__' + animate.button">
       <span>还没有账号? <span class="register" @click="$emit('getRouter', 'Register')">去注册</span></span>
     </div>
   </div>
 </template>
 
 <script>
-//引入md5
+// //引入md5
 import md5 from 'js-md5';
+import {Base64} from "js-base64"
 export default {
   name: 'LogIn',
   data() {
     return {
       animate: {//动画样式
-        img: "animate__zoomIn",
-        h2_first: "animate__fadeInDown",
-        h2_second: "animate__fadeInUp",
-        forgot: "animate__fadeInRight",
-        button: "animate__fadeInUp",
+        img: "zoomIn",
+        h2_first: "fadeInDown",
+        h2_second: "fadeInUp",
+        forgot: "fadeInRight",
+        button: "fadeInUp",
       },
       animate_second: {
-        img: "animate__zoomOut",
-        h2_first: "animate__fadeOutUp",
-        h2_second: "animate__fadeOutDown",
-        forgot: "animate__fadeOutRight",
-        button: "animate__fadeOutDown",
+        img: "zoomOut",
+        h2_first: "fadeOutUp",
+        h2_second: "fadeOutDown",
+        forgot: "fadeOutRight",
+        button: "fadeOutDown",
       },
       form: {//表单数据
-        phonenumber: "",
+        uname: "",
         pwd: "",
       },
     }
   },
-  props: ["wh", "greeting", "info"],//父组件传来的屏幕高度
+  props: ["wh", "greeting", "info", "pubKey"],//父组件传来的屏幕高度
   methods: {
     //返回homepage
     back() {
       this.animate = this.animate_second;
       setTimeout(() => {
         this.$emit("getRouter", "Homepage");
-      }, 600)
+      }, 500)
     },
     //提交登录
     onSubmit() {
-      //校验四个输入是否有空
-      if(this.form.phonenumber.trim() === "" || this.form.pwd.trim() === "") {
-        this.$toast.fail('请将表单填写完成哦~');
+      //校验输入是否有空
+      if(this.form.uname.trim() === "" || this.form.pwd.trim() === "") {
+        this.$toast.fail("请将内容填写完成，不许偷懒哦~");
         return
       }
       //加载提示
@@ -84,28 +84,32 @@ export default {
       });
       this.axios({
         method: "post",
-        url: "http://192.168.240.130/login",
+        url: "http://120.26.161.80:8080/cm/login",
         data: {
-          phonenumber: this.form.phonenumber,
-          pwd: md5(this.form.pwd),
-        }
-      })
-        .then((response) => {
-          toast.clear();//清除加载toast
-          const success = this.$toast.success('登录成功啦!');
-          success.clear();
-          this.animate = this.animate_second;
-          setTimeout(() => {
-            this.$emit("getRouter", "Homepage");//重定向到登录
-          }, 600)
+          phoneNumber: this.form.uname,
+          pwd: md5(this.form.pwd)
+        },
+      }).then((response) => {
+        toast.clear();//清除加载toast
+        const success = this.$toast.success('登录成功啦!');
+        success.clear();
+        this.animate = this.animate_second;
+        localStorage.setItem("club_token", JSON.stringify({
+          value: response.data.token,
+          exp: JSON.parse(Base64.decode(response.data.token.split(".")[1]))
+        }))
+        setTimeout(() => {
+          window.location.href = "https://m.limkim.xyz"
+        }, 600)
+      }).catch((err) => {
+        toast.clear();
+        if(err.response.data.error === 40002)
+          return this.$dialog.alert({ title: 'Oops!', message: '账号或密码错误， 请检查后重试哦', })
+        this.$dialog.alert({
+          title: 'Oops!',
+          message: '登录出错了， 稍后刷新试试吧~',
         })
-        .catch(() => {
-          toast.clear();
-          this.$dialog.alert({
-            title: 'Oops!',
-            message: '登录出错了~， 看来程序猿要加班了＞︿＜',
-          })
-        });
+      });
     }
   },
   mounted() {
@@ -120,6 +124,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
 .container {
+  overflow: hidden;
   position: relative;
   background-color: #fff;
   .header {
